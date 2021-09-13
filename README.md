@@ -34,3 +34,29 @@
 
 <img src="dd.png">
 
+
+### checking docker version 
+
+```
+❯ docker  version
+Client:
+ Cloud integration: 1.0.17
+ Version:           20.10.7
+ API version:       1.41
+ Go version:        go1.16.4
+ Git commit:        f0df350
+ Built:             Wed Jun  2 11:56:22 2021
+ OS/Arch:           darwin/amd64
+ Context:           default
+ Experimental:      true
+
+```
+
+## Docker ce installation on Windows / mac 
+
+### use Docker Desktop / tool box 
+
+## to install Docker ce in any LInux host 
+
+### Ubuntu 
+[docker install](https://docs.docker.com/engine/install/ubuntu/). 
