@@ -18,3 +18,19 @@
 <img src="cont.png">
 
 
+### Hypervisor vs CRE (container runtime engine)
+
+<img src="crevm.png">
+
+### Intro to docker 
+
+<img src="docker.png">
+
+## Docker info two 
+
+<img src="dockerinfo.png">
+
+### Intro to docker desktop 
+
+<img src="dd.png">
+
