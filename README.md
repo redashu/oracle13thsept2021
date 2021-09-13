@@ -255,3 +255,140 @@ BUG_REPORT_URL="https://bugs.alpinelinux.org/"
 
 ```
 
+### Docker host / server side location 
+
+```
+[ashu@ip-172-31-5-127 ~]$ docker  info    |   grep  docker
+ Init Binary: docker-init
+ Docker Root Dir: /var/lib/docker
+ Registry: https://index.docker.io/v1/
+ 
+ ```
+ 
+ ### tips to kill all the running containers
+ 
+ ```
+ [ashu@ip-172-31-5-127 ~]$ docker  kill   $(docker  ps  -q)
+7f9a232f2de3
+91efd45593ee
+42b5b2c7acf5
+5e0ecc056cdc
+80bf6092d69d
+462537601e58
+c1fcc62a019f
+b3ce1a86a778
+5ce92bdf158d
+943d2425bd26
+d26817ffe1ee
+e01aacfd82b0
+[ashu@ip-172-31-5-127 ~]$ docker  ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+[ashu@ip-172-31-5-127 ~]$ 
+
+
+```
+
+### remove a non running container 
+
+```
+[ashu@ip-172-31-5-127 ~]$ docker  rm  $(docker  ps  -a -q)
+7f9a232f2de3
+91efd45593ee
+42b5b2c7acf5
+5e0ecc056cdc
+80bf6092d69d
+462537601e58
+
+```
+
+### creating custom data images 
+
+<img src="img.png">
+
+### creating custom image 
+
+<img src="img2.png">
+
+### Example1  Dockerfile
+
+<img src="dockerfile1.png">
+
+### building image from dockerfile
+
+```
+[ashu@ip-172-31-5-127 ubuntuimg]$ ls
+Dockerfile
+[ashu@ip-172-31-5-127 ubuntuimg]$ docker  build  -t  ubuntu:ashuv1  . 
+Sending build context to Docker daemon  2.048kB
+Step 1/5 : FROM ubuntu
+ ---> fb52e22af1b0
+Step 2/5 : LABEL name="ashutoshh"
+ ---> Running in d47222607df6
+Removing intermediate container d47222607df6
+ ---> 916503ffba53
+Step 3/5 : LABEL email="ashutoshh@linux.com"
+ ---> Running in 63e3dd3583ab
+Removing intermediate container 63e3dd3583ab
+ ---> 95b5a833289b
+Step 4/5 : RUN  apt update
+ ---> Running in 5e02f0142dd8
+
+
+```
+### building image from dockerfile 
+
+```
+ docker build  -t  ubuntu:ashuv1  -f  ubuntu.dockerfile . 
+   99  history 
+   
+ ```
+ 
+ ### checking build history of image 
+ 
+ ```
+ [ashu@ip-172-31-5-127 myimages]$ docker  history  86a12d33ad84
+IMAGE          CREATED             CREATED BY                                      SIZE      COMMENT
+86a12d33ad84   About an hour ago   /bin/sh -c yum  install  net-tools -y           138MB     
+1d5acf6010cf   About an hour ago   /bin/sh -c #(nop)  LABEL email=ashutoshh@lin…   0B        
+96e094ebf68c   About an hour ago   /bin/sh -c #(nop)  LABEL name=ashutoshh         0B        
+fcf3cbfc22ac   4 weeks ago         /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B        
+<missing>      4 weeks ago         /bin/sh -c #(nop) ADD file:80501fec7ae07b717…   247MB  
+
+```
+
+## Understanding app containerization 
+
+<img src="appcont.png">
+
+### Understanding image sharing process
+
+<img src="imgshare.png">
+
+### container registry options 
+
+<img src="reg.png">
+
+### docker image name reality 
+
+<img src="imgname.png">
+
+## image pull check 
+
+```
+❯ docker   pull  ubuntu
+Using default tag: latest
+latest: Pulling from library/ubuntu
+35807b77a593: Pull complete 
+Digest: sha256:9d6a8699fb5c9c39cf08a0871bd6219f0400981c570894cd8cbea30d3424a31f
+Status: Downloaded newer image for ubuntu:latest
+docker.io/library/ubuntu:latest
+❯ docker  rmi  ubuntu
+Untagged: ubuntu:latest
+Untagged: ubuntu@sha256:9d6a8699fb5c9c39cf08a0871bd6219f0400981c570894cd8cbea30d3424a31f
+Deleted: sha256:fb52e22af1b01869e23e75089c368a1130fa538946d0411d47f964f8b1076180
+Deleted: sha256:4942a1abcbfa1c325b1d7ed93d3cf6020f555be706672308a4a4a6b6d631d2e7
+
+```
+
+
+
