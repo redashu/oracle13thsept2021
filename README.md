@@ -392,6 +392,160 @@ local     ashuvol1
 ]
 
 ```
+### mounting a specific location folder  to the container 
+
+```
+[ashu@ip-172-31-5-127 myimages]$ ls
+pythonapp  ubuntuimg  webapp
+[ashu@ip-172-31-5-127 myimages]$ pwd
+/home/ashu/myimages
+[ashu@ip-172-31-5-127 myimages]$ docker  run -it --rm  -v  /home/ashu/myimages/webapp/:/data1:ro  alpine  sh 
+/ # ls
+bin    dev    home   media  opt    root   sbin   sys    usr
+data1  etc    lib    mnt    proc   run    srv    tmp    var
+/ # cd  data1/
+/data1 # ls
+CODE_OF_CONDUCT.md  LICENSE             images              styles
+Dockerfile          README.md           index.html
+/data1 # exit
+
+```
+
+### cleaning up docker engine 
+
+```
+268  docker  rm  $(docker  ps -aq) -f 
+  269  docker  network prune 
+  270  docker  volume  rm  $(docker  volume  ls -q)
+  271  docker  rmi  $(docker  images -q) -f
+  
+```
+
+### creating mysql Db container 
+
+```
+[ashu@ip-172-31-5-127 myimages]$ docker  run -itd  --name  ashudb  -e  MYSQL_ROOT_PASSWORD=Oracledb099  -v  ashudbvol1:/var/lib/mysql/   --restart  always  mysql 
+Unable to find image 'mysql:latest' locally
+latest: Pulling from library/mysql
+a330b6cecb98: Already exists 
+9c8f656c32b8: Already exists 
+88e473c3f553: Already exists 
+062463ea5d2f: Already exists 
+daf7e3bdf4b6: Already exists 
+1839c0b7aac9: Already exists 
+cf0a0cfee6d0: Already exists 
+1b42041bb11e: Already exists 
+10459d86c7e6: Pull complete 
+b7199599d5f9: Pull complete 
+1d6f51e17d45: Pull complete 
+50e0789bacad: Pull complete 
+Digest: sha256:99e0989e7e3797cfbdb8d51a19d32c8d286dd8862794d01a547651a896bcf00c
+Status: Downloaded newer image for mysql:latest
+3a3637a1af544eee6f13716ee12ff31ca362226d0604e3912358c3dc8deb1357
+
+```
+
+### Deploy Mysql DB in seconds 
+
+```
+[ashu@ip-172-31-5-127 myimages]$ docker  exec  -it   ashudb  bash 
+root@3a3637a1af54:/# 
+root@3a3637a1af54:/# mysql  -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 9
+Server version: 8.0.26 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show  databases;
++--------------------+
+| Database           |
++--------------------+
+| ashudb             |
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+5 rows in set (0.01 sec)
+
+mysql> quit;
+Bye
+```
+
+### webapp with httpd 
+
+<img src="webapp.png">
+
+### webapp building docker  images 
+
+```
+[ashu@ip-172-31-5-127 myimages]$ ls
+customer1  pythonapp  ubuntuimg  webapp
+[ashu@ip-172-31-5-127 myimages]$ cd  customer1/
+[ashu@ip-172-31-5-127 customer1]$ ls
+deploy.sh  Dockerfile  webapp1  webapp2  webapp3
+[ashu@ip-172-31-5-127 customer1]$ docker build  -t   httpd:oraclesept142021v1 . 
+Sending build context to Docker daemon  1.899MB
+Step 1/13 : FROM oraclelinux:8.4
+ ---> fcf3cbfc22ac
+Step 2/13 : LABEL email=ashutoshh@linux.com
+ ---> Using cache
+ ---> 17bae20ee1b6
+Step 3/13 : ENV  customer1=80900
+ ---> Running in 3acf313ea476
+Removing intermediate container 3acf313ea476
+ ---> 3b921a69c51d
+Step 4/13 : RUN dnf  install  httpd -y
+ ---> Running in 038c5bbd5db8
+Oracle Linux 8 BaseOS Latest (x86_64)           139 MB/s |  35 MB     00:00    
+
+
+```
+
+### deploy app3 
+```
+docker run -itd --name  cusapp3 -e customer1=app3  -p 1155:80 httpd:oraclesept142021v1
+b6cd7ce2df29fb25de91abb8ea1551ff8dc129e43e121cdbd1ce76630111ea53
+
+```
+
+### pushing image to docker hub 
+
+```
+ashu@ip-172-31-5-127 customer1]$ docker  tag  httpd:oraclesept142021v1  dockerashu/httpd:orweb14sept2021 
+[ashu@ip-172-31-5-127 customer1]$ docker  login 
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: dockerashu
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ashu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[ashu@ip-172-31-5-127 customer1]$ docker  push  dockerashu/httpd:orweb14sept2021
+The push refers to repository [docker.io/dockerashu/httpd]
+910d6ffe87cf: Pushed 
+085a5da63629: Pushed 
+868115e5ff44: Pushed 
+27e51df21442: Pushed 
+b4ad427c2bba: Pushed 
+f25943feda10: Pushed 
+d0cc9c7e81b8: Pushed 
+89ca13798c53: Mounted from library/oraclelinux 
+orweb14sept2021: digest: sha256:edcc8a630dda837fdc4efa32c44f01544dc6fef3e288662f314175c03284216d size: 1992
+[ashu@ip-172-31-5-127 customer1]$ docker  logout 
+Removing login credentials for https://index.docker.io/v1/
+
+```
+
 
 
 
