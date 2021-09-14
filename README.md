@@ -293,5 +293,105 @@ round-trip min/avg/max = 0.086/0.096/0.107 ms
 
 ```
 
+### remove all custom bridge which is not used by any containers
+
+```
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  network  prune 
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] y
+Deleted Networks:
+ashubr1
+sbridge1
+ashubr2
+priyanka2
+vaseembr2
+nikbr2
+amanbr1
+amanbr2
+nikbr1
+vaseembr1
+bhaskerbr1
+bhaskerbr2
+priyankanetwork
+sambr1
+rohitbr1
+gopalbr1
+gopalbr2
+
+```
+
+## Docker CLient options 
+
+<img src="cli.png">
+
+### portainer deploy
+
+```
+ docker  run -itd --name weubui -p 9000:9000 --restart always -v  /var/run/docker.sock:/var/run/docker.sock  portainer/portainer
+ 
+```
+
+### SDK URL 
+
+[SDK](https://docs.docker.com/engine/api/sdk/examples/)
+
+## Storage concept in Docker 
+
+<img src="st.png">
+
+### showing container ephemral nature 
+
+```
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  run  -it --name ashuc1  alpine  sh 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # mkdir hello world 
+/ # ls
+bin    dev    etc    hello  home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var    world
+/ # echo  hello world >data.txt
+/ # ls
+bin       dev       hello     lib       mnt       proc      run       srv       tmp       var
+data.txt  etc       home      media     opt       root      sbin      sys       usr       world
+/ # exit
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  rm  ashuc1 
+ashuc1
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  run  -it --name ashuc1  alpine  sh 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # exit
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  rm  ashuc1
+ashuc1
+
+```
+
+### creating volume 
+
+```
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker volume   create ashuvol1 
+ashuvol1
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashuvol1
+
+```
+
+### volume inspect 
+
+```
+[ashu@ip-172-31-5-127 beginner-html-site-styled]$ docker  volume  inspect   ashuvol1 
+[
+    {
+        "CreatedAt": "2021-09-14T10:03:26Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/ashuvol1/_data",
+        "Name": "ashuvol1",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+```
+
 
 
