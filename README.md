@@ -357,7 +357,194 @@ status: {}
 ❯ kubectl  run  ashupod2  --image=alpine  --command ping fb.com --dry-run=client -o yaml  >pod22.yaml
 
 
-``
+```
+
+## Namespace 
+
+<img src="ns.png">
+
+## default namespaces in k8s 
+
+```
+❯ kubectl  get namespace
+NAME              STATUS   AGE
+default           Active   6h43m
+kube-node-lease   Active   6h43m
+kube-public       Active   6h43m
+kube-system       Active   6h43m
+
+```
+
+### namespace details 
+
+<img src="ns1.png">
+
+### to check pod internal details like , Namespace , container , process  , security and node info 
+
+```
+ kubectl  describe pod  amanpod1
+Name:         amanpod1
+Namespace:    default
+Priority:     0
+Node:         minion1/172.31.23.172
+Start Time:   Wed, 15 Sep 2021 14:51:13 +0530
+Labels:       run=amanpod1
+Annotations:  cni.projectcalico.org/containerID: 194ad90da4220f8c4849233c1fb73714c3a8ffbc3ef2dab60e382cff5de0ce97
+              cni.projectcalico.org/podIP: 192.168.34.13/32
+              cni.projectcalico.org/podIPs: 192.168.34.13/32
+Status:       Running
+IP:           192.168.34.13
+IPs:
+  IP:  192.168.34.13
+Containers:
+  amanpod1:
+    Container ID:  docker://bdbdb7d72a556cc93bf36ec2dd6895809c34435aba0584001e7e6ec5023c6915
+    Image:         busybox
+    Image ID:      docker-pullable://busybox@sha256:52f73a0a43a16cf37cd0720c90887ce972fe60ee06a687ee71fb93a7ca601df7
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      ping
+      fb.com
+
+
+```
+
+### creating namesapce 
+
+```
+❯ kubectl   create  namespace  ashu-space
+namespace/ashu-space created
+❯ kubectl  get  ns
+NAME              STATUS   AGE
+ashu-space        Active   22s
+default           Active   6h50m
+kube-node-lease   Active   6h50m
+
+```
+
+### setting default namespace 
+
+```
+❯ kubectl  config set-context --current --namespace=ashu-space
+Context "kubernetes-admin@kubernetes" modified.
+❯ 
+❯ kubectl  get   pods
+No resources found in ashu-space namespace.
+❯ kubectl  config  get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   ashu-space
+
+
+```
+
+### all pod in any namespace can connect to each other using their IP address
+
+```
+❯ kubectl  get  po -o wide
+NAME       READY   STATUS    RESTARTS   AGE    IP                NODE      NOMINATED NODE   READINESS GATES
+ashupod2   1/1     Running   0          9m7s   192.168.179.218   minion2   <none>           <none>
+❯ 
+❯ 
+❯ kubectl  get  po -o wide  -n default
+NAME      READY   STATUS    RESTARTS   AGE     IP                NODE      NOMINATED NODE   READINESS GATES
+nikpod1   1/1     Running   0          6m42s   192.168.179.223   minion2   <none>           <none>
+❯ kubectl  exec -it ashupod2  -- sh
+/ # ifconfig 
+eth0      Link encap:Ethernet  HWaddr C6:E1:A0:CA:6D:51  
+          inet addr:192.168.179.218  Bcast:192.168.179.218  Mask:255.255.255.255
+          UP BROADCAST RUNNING MULTICAST  MTU:8981  Metric:1
+          RX packets:617 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:613 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0 
+          RX bytes:59310 (57.9 KiB)  TX bytes:58166 (56.8 KiB)
+
+lo        Link encap:Local Loopback  
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+
+/ # ping  192.168.179.223
+PING 192.168.179.223 (192.168.179.223): 56 data bytes
+64 bytes from 192.168.179.223: seq=0 ttl=254 time=0.096 ms
+64 bytes from 192.168.179.223: seq=1 ttl=254 time=0.164 ms
+64 bytes from 192.168.179.223: seq=2 ttl=254 time=0.114 ms
+64 bytes from 192.168.179.223: seq=3 ttl=254 time=0.119 ms
+^C
+--- 192.168.179.223 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 0.096/0.123/0.164 ms
+/ # 
+
+```
+
+### Pod Networking 
+
+### CNI introduction 
+
+<img src="cni.png">
+
+## all pods can communicate to each other
+
+<img src="cnibr.png">
+
+### POd nginx creating 
+
+```
+❯ kubectl   run  ashuwebpod  --image=nginx  --port 80 --dry-run=client -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashuwebpod
+  name: ashuwebpod
+spec:
+  containers:
+  - image: nginx
+    name: ashuwebpod
+    ports:
+    - containerPort: 80
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+❯ kubectl   run  ashuwebpod  --image=nginx  --port 80 --dry-run=client -o yaml  >nginx.yaml
+
+```
+
+### nginx pod deployment 
+
+```
+shupod1.yaml nginx.yaml    pod22.yaml
+❯ kubectl  apply -f nginx.yaml
+pod/ashuwebpod created
+❯ kubectl  get  po -o wide
+NAME         READY   STATUS              RESTARTS   AGE   IP                NODE      NOMINATED NODE   READINESS GATES
+ashupod2     1/1     Running             0          24m   192.168.179.218   minion2   <none>           <none>
+ashuwebpod   0/1     ContainerCreating   0          6s    <none>            minion1   <none>           <none>
+❯ kubectl  get  po -o wide
+NAME         READY   STATUS    RESTARTS   AGE   IP                NODE      NOMINATED NODE   READINESS GATES
+ashupod2     1/1     Running   0          24m   192.168.179.218   minion2   <none>           <none>
+ashuwebpod   1/1     Running   0          17s   192.168.34.20     minion1   <none>           <none>
+
+```
+
+### access pod app from client machine 
+
+```
+ kubectl   port-forward  ashuwebpod  1234:80
+Forwarding from 127.0.0.1:1234 -> 80
+Forwarding from [::1]:1234 -> 80
+Handling connection for 1234
+Handling connection for 1234
+
+```
+
+
 
 
 
