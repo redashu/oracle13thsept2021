@@ -3,3 +3,8 @@
 ## training plan 
 
 <img src="plan.png">
+
+## Revision of 2 days 
+
+<img src="rev.png">
+
