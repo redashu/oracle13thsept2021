@@ -246,5 +246,121 @@ To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 
 ```
 
+## kubernetes pod introduction 
+
+<img src="contvspod.png">
+
+## More info about POD 
+
+<img src="pod.png">
+
+
+### checking yaml file syntax 
+
+```
+❯ kubectl  apply -f  ashupod1.yaml --dry-run=client
+pod/ashupod-1 created (dry run)
+
+```
+
+### running pod 
+
+```
+❯ kubectl  apply -f  ashupod1.yaml --dry-run=client
+pod/ashupod-1 created (dry run)
+❯ kubectl  apply -f  ashupod1.yaml
+pod/ashupod-1 created
+❯ kubectl  get  pods
+NAME           READY   STATUS    RESTARTS   AGE
+ashupod-1      1/1     Running   0          8s
+samanyupod-1   1/1     Running   0          7s
+
+```
+
+### checking pod node 
+
+```
+❯ kubectl  get  po  ashupod-1  -o wide
+NAME        READY   STATUS    RESTARTS   AGE     IP                NODE      NOMINATED NODE   READINESS GATES
+ashupod-1   1/1     Running   0          3m12s   192.168.179.194   minion2   <none>           <none>
+
+```
+
+### checking output of pod 
+
+```
+ kubectl   logs  -f  ashupod-1 
+ 
+```
+
+### kubectl immediately access of container
+
+```
+❯ kubectl  exec -it ashupod-1  -- sh
+/ # 
+/ # 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # cat /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.14.2
+PRETTY_NAME="Alpine Linux v3.14"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # exit
+
+```
+
+### deleting pod
+
+```
+❯ kubectl delete pod  ashupod-1
+pod "ashupod-1" deleted
+
+
+```
+
+###
+
+```
+❯ kubectl  delete  pods --all
+pod "amanpod-1" deleted
+pod "gopalpod-1" deleted
+pod "nikpod-1" deleted
+pod "rami-1" deleted
+pod "rohitpod-1" deleted
+pod "samanyupod-1" deleted
+
+```
+
+```
+❯ kubectl  run  ashupod2  --image=alpine  --command ping fb.com --dry-run=client -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod2
+  name: ashupod2
+spec:
+  containers:
+  - command:
+    - ping
+    - fb.com
+    image: alpine
+    name: ashupod2
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+❯ kubectl  run  ashupod2  --image=alpine  --command ping fb.com --dry-run=client -o yaml  >pod22.yaml
+
+
+``
+
+
+
+
 
 
