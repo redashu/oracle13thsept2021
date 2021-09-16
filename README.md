@@ -288,3 +288,29 @@ d00da3cd7763: Pushing [======================>                            ]  8.5
 799760671c38: Waiting 
 
 ```
+
+
+### Deploy POD from OCR public repo 
+
+```
+ kubectl  run  ashujava --image=phx.ocir.io/axmbtg8judkl/javawebapp:v1  --port 8080
+ 
+```
+
+## TOmcat application poD using Deployment 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  deploy
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+ashudep1   1/1     1            1           74s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  expose deploy  ashudep1  --type NodePort --port 8080 --name ashusvc222
+service/ashusvc222 exposed
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  svc
+NAME         TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+ashusvc222   NodePort   10.98.11.156   <none>        8080:30497/TCP   6s
+
+```
+
