@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashupvtimg
+  name: ashupvtimg # name of deploy f
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashupvtimg
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashupvtimg
+    spec:
+      imagePullSecrets: # defining secret 
+      - name: ocrsec # name of secret 
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/alpine:v1
+        name: alpine
+        command: ["sh","-c","ping google.com"] # if not preesent then crashloop backoff 
+        resources: {}
+status: {}

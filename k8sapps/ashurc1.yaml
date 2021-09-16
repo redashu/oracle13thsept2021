@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+ name: ashurc-123 # name of RC
+ namespace: ashu-space # namespace info 
+spec:
+ replicas: 1 # number of POD we want 
+ template: # it use will pod yaml data 
+  metadata:
+   labels: # label of POD 
+    x: helloashuapp3
+  spec:
+   containers:
+    - image: dockerashu/httpd:orweb14sept2021 # image from Docker hub 
+      name: ashuapp3 # name of container 
+      ports: # container app port number 
+      - containerPort: 80
+      env: # create / update ENV var 
+      - name: customer1 # name of env var
+        value: app3 # value
+
+# creating service 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc1
+  name: ashusvc1 # name of service 
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234 # port of service 
+    protocol: TCP
+    targetPort: 80 # port of POD application 
+  selector: # POD finder using label of POD
+    x: helloashuapp3 # exactly same label of pod 
+  type: NodePort # type of service 
+status:
+  loadBalancer: {}
+
