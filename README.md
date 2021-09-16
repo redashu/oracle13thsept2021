@@ -191,3 +191,100 @@ ashusvc1   NodePort   10.104.0.62   <none>        1234:32468/TCP   12s
 
 ```
 
+## cleaning up namespace 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  all
+NAME           READY   STATUS    RESTARTS   AGE
+pod/ashuapp3   1/1     Running   0          95m
+
+NAME               TYPE       CLUSTER-IP    EXTERNAL-IP   PORT(S)          AGE
+service/ashusvc1   NodePort   10.104.0.62   <none>        1234:32468/TCP   43m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  delete  all --all
+pod "ashuapp3" deleted
+service "ashusvc1" deleted
+
+```
+
+
+
+## Intro to Replication controller 
+
+<img src="rc.png">
+
+### creating RC
+
+```
+replicationcontroller/ashurc-123 created (dry run)
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl apply -f  ashurc1.yaml                replicationcontroller/ashurc-123 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  rc
+NAME         DESIRED   CURRENT   READY   AGE
+ashurc-123   1         1         1       8s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po
+NAME               READY   STATUS    RESTARTS   AGE
+ashurc-123-x59qf   1/1     Running   0          16s
+
+```
+
+### scaling Pod 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  scale  rc ashurc-123  --replicas=3
+replicationcontroller/ashurc-123 scaled
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po 
+NAME                   READY   STATUS    RESTARTS   AGE
+ashurc-123-4xgll       0/1     Pending   0          5s
+ashurc-123-9rzll       0/1     Pending   0          5s
+ashurc-123-bj82w       1/1     Running   0          5m33s
+
+```
+
+### Journey from RC to RS to Deployement 
+
+<img src="dep.png">
+
+### Demo of deployment with OCR 
+
+<img src="ocr.png">
+
+### Building tomcat app image 
+
+```
+ fire@ashutoshhs-MacBook-Air  ~  docker  build -t  ashujava:webappv1  https://github.com/redashu/javawebapp.git  
+[+] Building 53.7s (3/8)                                                                                                       
+ => CACHED [internal] load git source https://github.com/redashu/javawebapp.git                                           0.0s
+ => [internal] load metadata for docker.io/library/tomcat:latest                                                          4.3s
+ => [auth] library/tomcat:pull token for registry-1.docker.io                                                             0.0s
+ => [1/5] FROM docker.io/library/tomcat@sha256:54876d82d30746c5b625a784938864d5b726219e0aace09b3e57ef4dfa85d594          49.4s
+ => => resolve docker.io/library/tomcat@sha256:54876d82d30746c5b625a784938864d5b726219e0aace09b3e57ef4dfa85d594           0.0s
+ => => sha256:54876d82d30746c5b625a784938864d5b726219e0aace09b3e57ef4dfa85d594 549B / 549B                                0.0s
+ => => sha256:709c112a87273828f4df9caa99540a1d4f59891455cdfff7ec0ec99edc49f59b 2.42kB / 2.42kB                            0.0s
+ => => sha256:955615a668ce
+```
+
+
+### pushing image to OCR 
+
+```
+4235 docker  tag  462a7d9a5f01   phx.ocir.io/axmbtg8judkl/javawebapp:v1 
+ 4236  docker  images
+ 4237  docker  login  phx.ocir.io  
+ 4238  docker  logout  phx.ocir.io  
+ 4239  docker  login  phx.ocir.io  
+ fire@ashutoshhs-MacBook-Air  ~  docker push  phx.ocir.io/axmbtg8judkl/javawebapp:v1                 
+The push refers to repository [phx.ocir.io/axmbtg8judkl/javawebapp]
+387bab7ff1dd: Pushed 
+5f70bf18a086: Pushed 
+8b22855c0159: Pushed 
+4831bcd1167f: Pushed 
+977cfcbcf0fa: Pushing [======================>                            ]  8.926MB/20.16MB
+4e4de253c94d: Pushed 
+3891808a925b: Pushing [=>                                                 ]  13.22MB/342.7MB
+d402f4f1b906: Pushed 
+00ef5416d927: Pushing [==============================>                    ]  6.847MB/11.31MB
+8555e663f65b: Pushing [=======>                                           ]  21.43MB/151.9MB
+d00da3cd7763: Pushing [======================>                            ]  8.527MB/18.95MB
+4e61e63529c2: Waiting 
+799760671c38: Waiting 
+
+```
