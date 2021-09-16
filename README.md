@@ -470,3 +470,65 @@ secret "ashudbsec" deleted
 <img src="k8summary.png">
 
 
+## switching between cluster 
+
+### 
+
+```
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl  get  nodes
+NAME      STATUS   ROLES                  AGE     VERSION
+master    Ready    control-plane,master   3h38m   v1.22.2
+minion1   Ready    <none>                 3h37m   v1.22.2
+minion2   Ready    <none>                 3h36m   v1.22.2
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  minikube status 
+minikube
+type: Control Plane
+host: Stopped
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Stopped
+
+ ✘ fire@ashutoshhs-MacBook-Air  ~/Desktop  minikube start
+😄  minikube v1.22.0 on Darwin 11.4
+🎉  minikube 1.23.0 is available! Download it: https://github.com/kubernetes/minikube/releases/tag/v1.23.0
+💡  To disable this notice, run: 'minikube config set WantUpdateNotification false'
+
+✨  Using the docker driver based on existing profile
+👍  Starting control plane node minikube in cluster minikube
+🚜  Pulling base image ...
+🔄  Restarting existing docker container for "minikube" ...
+
+
+```
+
+#
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl  config  get-contexts 
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+          kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   ashu-space
+*         minikube                      minikube     minikube           default
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl  config use-context  kubernetes-admin@kubernetes 
+Switched to context "kubernetes-admin@kubernetes".
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl  config  get-contexts                            
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   ashu-space
+          minikube                      minikube     minikube           default
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl get no
+NAME      STATUS   ROLES                  AGE     VERSION
+master    Ready    control-plane,master   3h41m   v1.22.2
+minion1   Ready    <none>                 3h39m   v1.22.2
+minion2   Ready    <none>                 3h39m   v1.22.2
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl  config use-context  minikube                    
+Switched to context "minikube".
+ fire@ashutoshhs-MacBook-Air  ~/Desktop  kubectl get no                       
+NAME       STATUS   ROLES                  AGE   VERSION
+minikube   Ready    control-plane,master   28h   v1.21.2
+
+```
+
