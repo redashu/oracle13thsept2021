@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+ ashuapp1: # name of service
+  image: alpine:ashuv1  # this image i want to build 
+  build:  # looking for dockerfile -- . means current location
+   context: . # location of dockerfile 
+   dockerfile: alpine.dockerfile  # name of dockerfile 
+  container_name: ashuc12 # from new image container will be created
+  

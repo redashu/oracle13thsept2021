@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+ ashuapp2: # name of service 
+  image: oraclelinux:8.4
+  container_name: ashuc2
+  command: ping google.com 
+ ashuapp1: # name of service
+  image: alpine
+  container_name: ashuc1
+  command: ping fb.com 
