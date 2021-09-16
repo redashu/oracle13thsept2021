@@ -314,3 +314,159 @@ ashusvc222   NodePort   10.98.11.156   <none>        8080:30497/TCP   6s
 
 ```
 
+### creating task 
+
+```
+4339  kubectl  create namespace  ashuk8s1 --dry-run=client -o yaml 
+ 4340  kubectl  run  ashupod1 --image=ubuntu --commanda sleep 1200000 --namespace=ashuk8s1  --dry-run=client -o yaml 
+ 4341  kubectl  run  ashupod1 --image=ubuntu --command sleep 1200000 --namespace=ashuk8s1  --dry-run=client -o yaml 
+ 4342  kubectl  create  service  nodeport ashusvc1  --tcp 1234:80 --namespace=ashuk8s1 --dry-run=client -o yaml 
+ 4343  kubectl apply -f  mytask.yaml
+ 4344  kubectl  get  po,svc -n ashuk8s1 
+ 4345* cd Desktop
+ 4346* ls
+ 4347* echo heoop >hello.txt
+ 4348* ls
+ 4349  kubectl  cp ~/Desktop/hello.txt ashupod1:/tmp/
+ 4350  kubectl  cp ~/Desktop/hello.txt ashupod1:/tmp/  -n ashuk8s1 
+ 4351  kubectl  exec -it  ashupod1  -n ashuk8s1 -- bash 
+ 
+ ```
+ 
+ ### creating deployment 
+ 
+ ```
+ kubectl  create deployment  ashupvtimg  --image=phx.ocir.io/axmbtg8judkl/alpine:v1   --dry-run=client -o yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashupvtimg
+  name: ashupvtimg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashupvtimg
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashupvtimg
+    spec:
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/alpine:v1
+        name: alpine
+        resources: {}
+        
+ ```
+ 
+ ### Troubleshooting 
+ 
+ ### Errer image pull back off
+ 
+ ```
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl apply  -f  ocr.yaml 
+deployment.apps/ashupvtimg created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+ashupvtimg   0/1     1            0           8s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po 
+NAME                          READY   STATUS             RESTARTS   AGE
+ashupvtimg-6cd95bcd4f-rq2g5   0/1     ImagePullBackOff   0          23s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po 
+NAME                          READY   STATUS         RESTARTS   AGE
+ashupvtimg-6cd95bcd4f-rq2g5   0/1     ErrImagePull   0          112s
+
+```
+
+### secret 
+
+```
+ kubectl  create secret docker-registry   ocrsec --docker-server=phx.ocir.io       --docker-username=axmbtg8judkl/learntechbyme@gmail.com  --docker-password="vpL0
+ 
+ ```
+ 
+ ### Db deployment in k8s 
+ 
+ ### yaml creation 
+ 
+ ```
+ kubectl  create  deployment  ashudb --image=mysql  --dry-run=client -o yaml  >ashudb.yaml
+ 
+ kubectl  create  secret   generic  ashudbsec  --from-literal x1=Oracledb088
+ 
+ ```
+ 
+ ### deploy 
+ 
+ ```
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl apply -f  ashudb.yaml 
+deployment.apps/ashudb created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb       1/1     1            1           7s
+ashupvtimg   1/1     1            1           36m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po 
+NAME                          READY   STATUS    RESTARTS   AGE
+ashudb-6ccc868488-hkbnk       1/1     Running   0          14s
+ashupvtimg-765988678b-rlpjr   1/1     Running   0          36m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  secret
+NAME                  TYPE                                  DATA   AGE
+ashudbsec             Opaque                                1      5m48s
+
+```
+
+### checking logs and login to db 
+
+```
+4412  kubectl  logs -f ashudb-6ccc868488-hkbnk 
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  exec -it ashudb-6ccc868488-hkbnk  -- bash 
+root@ashudb-6ccc868488-hkbnk:/# 
+root@ashudb-6ccc868488-hkbnk:/# 
+root@ashudb-6ccc868488-hkbnk:/# 
+root@ashudb-6ccc868488-hkbnk:/# mysql  -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.26 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> ^DBye
+root@ashudb-6ccc868488-hkbnk:/# exit
+exit
+
+```
+
+### cleanup 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  delete all --all
+pod "ashudb-6ccc868488-hkbnk" deleted
+pod "ashupvtimg-765988678b-rlpjr" deleted
+deployment.apps "ashudb" deleted
+deployment.apps "ashupvtimg" deleted
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  secret 
+NAME                  TYPE                                  DATA   AGE
+ashudbsec             Opaque                                1      8m35s
+default-token-8b5s6   kubernetes.io/service-account-token   3      125m
+ocrsec                kubernetes.io/dockerconfigjson        1      45m
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl delete secret  ashudbsec 
+secret "ashudbsec" deleted
+
+```
+
+### k8s summary 
+
+<img src="k8summary.png">
+
+
