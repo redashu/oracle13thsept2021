@@ -222,4 +222,92 @@ deployment.apps/ashuwebapp rolled back
 
 ```
 
+## Kubernetes dashboard deployment 
+
+```
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.3.1/aio/deploy/recommended.yaml
+namespace/kubernetes-dashboard created
+serviceaccount/kubernetes-dashboard created
+service/kubernetes-dashboard created
+secret/kubernetes-dashboard-certs created
+secret/kubernetes-dashboard-csrf created
+secret/kubernetes-dashboard-key-holder created
+configmap/kubernetes-dashboard-settings created
+role.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrole.rbac.authorization.k8s.io/kubernetes-dashboard created
+rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+clusterrolebinding.rbac.authorization.k8s.io/kubernetes-dashboard created
+deployment.apps/kubernetes-dashboard created
+service/dashboard-metrics-scraper created
+Warning: spec.template.metadata.annotations[seccomp.security.alpha.kubernetes.io/pod]: deprecated since v1.19; use the "seccompProfile" field instead
+deployment.apps/dashboard-metrics-scraper created
+
+```
+
+### changing svc from CLusterIP to nodeport
+
+```
+fire@ashutoshhs-MacBook-Air  ~  kubectl  get  deploy -n kubernetes-dashboard
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+dashboard-metrics-scraper   1/1     1            1           3m54s
+kubernetes-dashboard        1/1     1            1           3m56s
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  po  -n kubernetes-dashboard
+NAME                                         READY   STATUS    RESTARTS   AGE
+dashboard-metrics-scraper-856586f554-qg9k2   1/1     Running   0          4m5s
+kubernetes-dashboard-67484c44f6-v48mj        1/1     Running   0          4m7s
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  svc  -n kubernetes-dashboard
+NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+dashboard-metrics-scraper   ClusterIP   10.97.133.200   <none>        8000/TCP   4m24s
+kubernetes-dashboard        ClusterIP   10.97.255.50    <none>        443/TCP    4m31s
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  edit  svc  kubernetes-dashboard   -n  kubernetes-dashboard
+service/kubernetes-dashboard edited
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  svc  -n kubernetes-dashboard                         
+NAME                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)         AGE
+dashboard-metrics-scraper   ClusterIP   10.97.133.200   <none>        8000/TCP        5m20s
+kubernetes-dashboard        NodePort    10.97.255.50    <none>        443:32420/TCP   5m27s
+
+```
+
+### gettting token for dashboard 
+
+```
+fire@ashutoshhs-MacBook-Air  ~  kubectl  get  secret  -n kubernetes-dashboard
+NAME                               TYPE                                  DATA   AGE
+default-token-nm4j7                kubernetes.io/service-account-token   3      8m19s
+kubernetes-dashboard-certs         Opaque                                0      8m16s
+kubernetes-dashboard-csrf          Opaque                                1      8m16s
+kubernetes-dashboard-key-holder    Opaque                                2      8m15s
+kubernetes-dashboard-token-cn48z   kubernetes.io/service-account-token   3      8m18s
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  describe  secret kubernetes-dashboard-token-cn48z    -n kubernetes-dashboard
+
+
+
+
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  describe  secret kubernetes-dashboard-token-cn48z    -n kubernetes-dashboard
+Name:         kubernetes-dashboard-token-cn48z
+Namespace:    kubernetes-dashboard
+Labels:       <none>
+Annotations:  kubernetes.io/service-account.name: kubernetes-dashboard
+              kubernetes.io/service-account.uid: 38b51e99-d176-43d4-93aa-2fe72c9fe983
+
+Type:  kubernetes.io/service-account-token
+
+Data
+====
+ca.crt:     1099 bytes
+namespace:  20 bytes
+token:      eyJhbGciOiJSUzI1NiIsImtpZCI6InhHX3ZvcHI5MDQ5UVRZZF9VNkZpM2NvZ2NGc1F2ekxoakdIYXpITGRrUTgifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNj
+
+```
+
+### k8s dashboard svc account need to bound with clusterole 
+
+```
+kubectl  create  clusterrolebinding  mydashboard  --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:kubernetes-dashboard 
+
+```
+
+
 
