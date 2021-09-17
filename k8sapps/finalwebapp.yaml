@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp # name of deployment 
+  namespace: ashu-space # namespace info 
+spec:
+  replicas: 1 # number of POD we want 
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template: # deploy will use template to create PODs 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pod 
+        app: ashuwebapp
+    spec:
+      containers:
+      - image: dockerashu/finalwebapp:appv1 # image from docker hub 
+        name: finalwebapp # name of container 
+        ports: # webapp port optional field 
+          - containerPort: 80 
+        resources:  # free to scale vertically 
+         requests: # default requst for contaienr underpod 
+          cpu: 200m # 200 mili core -- 1 vcpu - 1000m 
+         limits: # max cpu use by container 
+          cpu: 500m 
+status: {}
+
+# creating service 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc2
+  name: ashusvc2 # name of service 
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234 # port of service 
+    protocol: TCP
+    targetPort: 80 # app port 
+  selector: # pod finder using label of pod 
+    app: ashuwebapp # this is pod label 
+  type: NodePort # type of service 
+status:
+  loadBalancer: {}

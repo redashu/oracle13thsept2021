@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels: # label of POD 
+    x: helloashuapp3 # run is a key and ashuapp3 is a value 
+  name: ashuapp3 # name of pod 
+  namespace: ashu-space # namespace info 
+spec:
+  containers:
+  - image: dockerashu/httpd:orweb14sept2021 # image from Docker hub 
+    name: ashuapp3 # name of container 
+    ports: # container app port number 
+    - containerPort: 80
+    env: # create / update ENV var 
+    - name: customer1 # name of env var
+      value: app3 # value 
+    resources: {} # free to scale vertically 
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
