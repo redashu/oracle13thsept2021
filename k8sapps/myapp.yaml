@@ -17,7 +17,7 @@ spec:
       labels:
         app: ashudb # pod label 
     spec:
-      nodeName: minion1 # static scheduling {kube-schedular won't work}
+      
       volumes: # creating volume 
       - name: ashudbvol
         hostPath: # taking storage from minion 1
