@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb # name of deployment 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # template 
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashudb # pod label 
+    spec:
+      nodeName: minion1 # static scheduling {kube-schedular won't work}
+      volumes: # creating volume 
+      - name: ashudbvol
+        hostPath: # taking storage from minion 1
+         path: /ashudbdata1122 # this directory will be created if not present
+         type: DirectoryOrCreate 
+      containers:
+      - image: mysql:5.6 # docker hub image 
+        name: mysql # name of container 
+        volumeMounts:
+        - name: ashudbvol # mounting volume 
+          mountPath: /var/lib/mysql/ # location where mysql store its database 
+        env:  # passing value to env of mysql image 
+        - name: MYSQL_ROOT_PASSWORD # env variable 
+          valueFrom: # reading value from secret 
+           secretKeyRef:
+            name: ashudbsec1
+            key: sqlpw
+        resources: {}
+status: {}
+
+# creating secret for Db 
+
+---
+apiVersion: v1
+data:
+  sqlpw: T3JhY2xlMDg4Nw==
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashudbsec1
+
+# creating service for DB of clusterIP type 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: ashudb
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+# creating webapp 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuphpapp
+  name: ashuphpapp # name of app 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashuphpapp
+  strategy: {}
+  template: # template 
+    metadata:
+      creationTimestamp: null
+      labels: # pod label 
+        app: ashuphpapp
+    spec:
+      containers:
+      - image: wordpress:4.8-apache # docker hub image 
+        name: wordpress
+        env: # use to connect DB pod
+        - name: WORDPRESS_DB_HOST 
+          value: ashudb # svc name of DB pod / deploy
+        - name: WORDPRESS_DB_PASSWORD # reading password from secret
+          valueFrom:
+           secretKeyRef:
+            name: ashudbsec1 # name of secret
+            key: sqlpw # key of secret 
+        resources: {}
+
+# creating service for webapp of LoadBalancer type
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuphpapp
+  name: ashuphpapp
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: ashuphpapp
+  type: LoadBalancer
+status:
+  loadBalancer: {}
