@@ -310,4 +310,42 @@ kubectl  create  clusterrolebinding  mydashboard  --clusterrole=cluster-admin --
 ```
 
 
+### storage in k8s 
+
+<img src="st.png">
+
+### Testing with EmptyDir volume type 
+
+#### creating POD that is generating data 
+
+```
+kubectl  run  ashudatapod  --image=alpine  --dry-run=client -o yaml            >datapod.yaml
+
+```
+
+### Multi container POd 
+
+<img src="mcpod.png">
+
+## multi container pod 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl replace -f  datapod.yaml --force
+pod "ashudatapod" deleted
+pod/ashudatapod replaced
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  pods
+NAME          READY   STATUS    RESTARTS   AGE
+ashudatapod   2/2     Running   0          7s
+
+```
+
+### POrtainer deployment in COntainer 
+
+```
+kubectl  create deployment  webui --image=portainer/portainer --dry-run=client -o yaml 
+
+```
+
+
+
 
