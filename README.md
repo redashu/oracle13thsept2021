@@ -142,4 +142,84 @@ ashuwebapp   Deployment/ashuwebapp   <unknown>/80%   1         10        0      
 
 ```
 
+### End to end app access
+
+<img src="end.png">
+
+### diff b/w Nodeport and loadbalancer service 
+
+<img src="svclb.png">
+
+## for non cloud k8s service Nodeport and LB svc are 100% same 
+
+```
+kubectl  expose deploy  ashuwebapp  --type LoadBalancer --port 80 --name  ashulbsvc  
+service/ashulbsvc exposed
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl get  svc 
+NAME        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashulbsvc   LoadBalancer   10.107.228.109   <pending>     80:32311/TCP     4s
+ashusvc2    NodePort       10.110.92.224    <none>        1234:31519/TCP   75m
+
+```
+
+### updataing app
+
+```
+ kubectl  describe  deploy  ashuwebapp
+Name:                   ashuwebapp
+Namespace:              ashu-space
+CreationTimestamp:      Fri, 17 Sep 2021 10:37:06 +0530
+Labels:                 app=ashuwebapp
+Annotations:            deployment.kubernetes.io/revision: 2
+Selector:               app=ashuwebapp
+Replicas:               1 desired | 1 updated | 1 total | 1 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=ashuwebapp
+  Containers:
+   finalwebapp:
+    Image:      dockerashu/finalwebapp:appv1
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:  500m
+    Requests:
+      cpu:        200m
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   ashuwebapp-7d7cb4c85f (1/1 replicas created)
+Events:          <none>
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps/ashuwebapp  kubectl  set  image  deploy ashuwebapp finalwebapp=dockerashu/finalwebapp:appv2  
+deployment.apps/ashuwebapp image updated
+
+```
+
+### rolling update and rollout 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps/ashuwebapp  kubectl rollout history deploy ashuwebapp
+deployment.apps/ashuwebapp 
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps/ashuwebapp  kubectl rollout undo deploy ashuwebapp --to-revision=1
+deployment.apps/ashuwebapp rolled back
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps/ashuwebapp  kubectl rollout undo deploy ashuwebapp --to-revision=2
+deployment.apps/ashuwebapp rolled back
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps/ashuwebapp  kubectl rollout undo deploy ashuwebapp --to-revision=3
+deployment.apps/ashuwebapp rolled back
+
+```
+
 
