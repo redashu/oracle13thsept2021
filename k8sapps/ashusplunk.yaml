@@ -1,0 +1,91 @@
+# creating NS 
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: ashusplunkns
+spec: {}
+status: {}
+
+# creating COnfigmap to store env var value 
+---
+apiVersion: v1
+data:
+  key1: --accept-license
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ashucm1
+  namespace: ashusplunkns
+
+# creating secret to store splunk password 
+---
+apiVersion: v1
+data:
+  splkpw: T3JhY2xlMDg4
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashusec111
+  namespace: ashusplunkns 
+
+
+# creating deloyment 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusplunk
+  name: ashusplunk
+  namespace: ashusplunkns 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashusplunk
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels: # label of pod 
+        app: ashusplunk
+    spec:
+      containers:
+      - image: splunk/splunk:latest
+        name: splunk
+        env:  # updating env var
+        - name: SPLUNK_START_ARGS
+          valueFrom: # calling value from CM 
+           ConfigMapKeyRef:
+            name: ashucm1 
+            key: key1 
+          name: SPLUNK_PASSWORD
+          valueFrom:  # reading value from secret 
+           secretKeyRef:
+            name: ashusec111 # name of secret 
+            key: splkpw  # key of secret 
+        resources: {}
+
+# creating service 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashusvc
+  name: ashusvc
+  namespace: ashusplunkns
+spec:
+  ports:
+  - name: 1234-8000
+    port: 1234
+    protocol: TCP
+    targetPort: 8000
+  selector: # mathcing label of POD 
+    app: ashusplunk
+  type: NodePort
+status:
+  loadBalancer: {}

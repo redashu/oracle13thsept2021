@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: webui
+  name: webui # name of deploy 
+spec:
+  replicas: 1 # number replicas 3 
+  selector:
+    matchLabels:
+      app: webui
+  strategy: {}
+  template: # to create pod tempalte 
+    metadata:
+      creationTimestamp: null
+      labels: # label of pod 
+        app: webui
+    spec:
+      volumes:
+      - name: ashuportvol1 
+        hostPath: 
+         path: /var/run/docker.sock
+         type: Socket 
+      containers:
+      - image: portainer/portainer # portainer image 
+        name: portainer
+        volumeMounts:
+        - name: ashuportvol1
+          mountPath: /var/run/docker.sock
+        resources: {}
+status: {}
