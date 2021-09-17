@@ -347,5 +347,71 @@ kubectl  create deployment  webui --image=portainer/portainer --dry-run=client -
 ```
 
 
+### CLoud services for k8s 
+
+### OKE 
+
+<img src="oke.png">
+
+### webapp using php and mysql 
+
+<img src="phpmysql.png">
+
+### creating yaml for DB deployment 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  apply -f  myapp.yaml 
+deployment.apps/ashudb created
+secret/ashudbsec1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  secret 
+NAME                  TYPE                                  DATA   AGE
+ashudbsec1            Opaque                                1      11s
+default-token-8b5s6   kubernetes.io/service-account-token   3      25h
+ocrsec                kubernetes.io/dockerconfigjson        1      24h
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  deploy 
+NAME     READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb   1/1     1            1           20s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po    
+NAME                      READY   STATUS    RESTARTS   AGE
+ashudb-79b6867487-4w565   1/1     Running   0          26s
+
+```
+
+### creating webapp 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  apply -f myapp.yaml 
+deployment.apps/ashudb configured
+secret/ashudbsec1 configured
+service/ashudb configured
+deployment.apps/ashuphpapp created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  deploy 
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+ashudb       1/1     1            1           14m
+ashuphpapp   0/1     1            0           9s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po
+NAME                          READY   STATUS              RESTARTS   AGE
+ashudb-6687545c65-54hqx       1/1     Running             0          15m
+ashuphpapp-84645f864f-xstj9   0/1     ContainerCreating   0          17s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  po
+NAME                          READY   STATUS    RESTARTS   AGE
+ashudb-6687545c65-54hqx       1/1     Running   0          15m
+ashuphpapp-84645f864f-xstj9   1/1     Running   0          28s
+
+==
+
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  apply -f myapp.yaml
+deployment.apps/ashudb configured
+secret/ashudbsec1 configured
+service/ashudb configured
+deployment.apps/ashuphpapp configured
+service/ashuphpapp created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8sapps  kubectl  get  svc
+NAME         TYPE           CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+ashudb       ClusterIP      10.98.255.89    <none>        3306/TCP       14m
+ashuphpapp   LoadBalancer   10.108.66.160   <pending>     80:31687/TCP   6s
+
+```
+
 
 
